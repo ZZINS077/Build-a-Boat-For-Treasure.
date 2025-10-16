@@ -1,2 +1,92 @@
--- removed by owner
--- nothing to see here
+-- ZZINS | Build a Boat for Treasure | Made By @ZZINS_SCRIPTS
+-- Fast AutoFarm - Fixed Version
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "ZZINS | Build a Boat for Treasure",
+   LoadingTitle = "ZZINS AutoFarm",
+   LoadingSubtitle = "Made By @ZZINS_SCRIPTS",
+   ConfigurationSaving = {Enabled = true, FolderName = "ZZINS_BoatFarm"},
+   KeySystem = false
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local _G = _G or getgenv()
+
+_G.farm = false
+local times = 0
+local FarmSpeed = 1
+
+local MainTab = Window:CreateTab("AutoFarm", nil)
+
+MainTab:CreateToggle({
+   Name = "AutoFarm",
+   CurrentValue = false,
+   Flag = "AutoFarmToggle",
+   Callback = function(Value)
+      _G.farm = Value
+      if Value then
+         spawn(function()
+            fastFarm()
+         end)
+      end
+   end,
+})
+
+MainTab:CreateSlider({
+   Name = "Speed",
+   Range = {1, 10},
+   Increment = 1,
+   CurrentValue = 1,
+   Flag = "FarmSpeed",
+   Callback = function(Value)
+      FarmSpeed = Value
+   end,
+})
+
+-- EXACT original logic but FASTER
+function fastFarm()
+   times = 0
+   while _G.farm == true do
+      local T = LocalPlayer.Character.HumanoidRootPart
+      if T then
+         local BV = Instance.new('BodyVelocity', T)
+         BV.Velocity = Vector3.new(0,-0.1,0)
+         
+         -- Start position
+         T.CFrame = CFrame.new(-49.705349, 50, -496.427887)
+         print('Initiating ' .. times)
+         
+         -- FASTER movement - bigger steps
+         while T.CFrame.Z < 9513.75293 do
+            if not _G.farm then break end
+            -- Original had 2000+ tiny steps, now bigger steps
+            for i = 1, FarmSpeed * 10 do
+               T.CFrame = T.CFrame + Vector3.new(0,0, FarmSpeed * 0.2)
+               if T.CFrame.Z >= 9513.75293 then break end
+            end
+            wait()
+         end
+         
+         BV:Destroy()
+         T.CFrame = CFrame.new(-61, -351, 9524)
+         wait(0.5)
+         
+         print('completed ' .. times)
+         times = times + 1
+         wait(1) -- Reduced from 5 to 1 second
+      else
+         wait(1)
+      end
+   end
+end
+
+Rayfield:Notify({
+   Title = "ZZINS AutoFarm",
+   Content = "Loaded! Toggle AutoFarm to start",
+   Duration = 3,
+})
+
+print("ZZINS AutoFarm Loaded - Toggle to start farming!")
